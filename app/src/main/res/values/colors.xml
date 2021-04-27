@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#367C25</color>
+    <color name="colorPrimaryDark">#256c13</color>
+    <color name="colorAccent">#367C25</color>
+    <color name="colorBackground">#BAC1C1C1</color>
+    <color name="receita">#607890</color>
+    <color name="despesa">#B22318</color>
+    <color name="purple_200">#B23418</color>
+    <color name="purple_700">#B23418</color>
+    <color name="teal_200">#B23418</color>
+</resources>
