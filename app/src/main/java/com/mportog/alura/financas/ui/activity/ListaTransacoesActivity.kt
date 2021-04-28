@@ -1,39 +1,67 @@
 package com.mportog.alura.financas.ui.activity
 
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.mportog.alura.financas.R
+import com.mportog.alura.financas.delegate.TransacaoDelegate
 import com.mportog.alura.financas.model.Transacao
+import com.mportog.alura.financas.ui.ResumoView
 import com.mportog.alura.financas.ui.adapter.ListaTransacoesAdapter
+import com.mportog.alura.financas.ui.dialog.TransacaoDialog
 import com.mportog.alura.financas.utils.enums.Tipo
 import kotlinx.android.synthetic.main.activity_lista_transacoes.*
-import java.math.BigDecimal
-import java.util.*
 
 class ListaTransacoesActivity : AppCompatActivity() {
+    private val transacoes: MutableList<Transacao> = mutableListOf()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_lista_transacoes)
-        val transacoes = createData()
+
+        configuraResumo()
+        configuraLista()
+
+        configuraFab()
+    }
+
+    private fun configuraFab() {
+        lista_transacoes_adiciona_receita
+            .setOnClickListener {
+                chamaDialogDeAdicao(Tipo.RECEITA)
+            }
+        lista_transacoes_adiciona_despesa
+            .setOnClickListener {
+                chamaDialogDeAdicao(Tipo.DESPESA)
+            }
+    }
+
+    private fun chamaDialogDeAdicao(tipo: Tipo) {
+        TransacaoDialog(window.decorView as ViewGroup, this)
+            .iniciar(tipo, object : TransacaoDelegate {
+                override fun delegate(transacao: Transacao) {
+                    atualizaTransacoes(transacao)
+                    lista_transacoes_adiciona_menu.close(true)
+                }
+            })
+    }
+
+    private fun configuraLista() {
         lista_transacoes_listview.setAdapter(ListaTransacoesAdapter(transacoes, this))
     }
 
-    private fun createData(): List<Transacao> {
-        val ontem: Calendar = Calendar.getInstance().apply {
-            add(Calendar.DATE, -1)
-        }
+    private fun configuraResumo() {
+        val view: View = window.decorView
+        val resumoView = ResumoView(view, transacoes)
+        resumoView.atualizaResumo()
+    }
 
-        var transacoes = listOf(
-            Transacao(valor = BigDecimal(50.50), tipo = Tipo.RECEITA),
-            Transacao(
-                valor = BigDecimal(27.50),
-                categoria = "Transporte",
-                tipo = Tipo.DESPEZA,
-                data = ontem
-            ),
-            Transacao(valor = BigDecimal(42.0), tipo = Tipo.DESPEZA, data = ontem)
-        )
-        return transacoes
+    private fun atualizaTransacoes(transacao: Transacao) {
+        transacoes.add(transacao)
+        configuraLista()
+        configuraResumo()
     }
 }

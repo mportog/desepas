@@ -5,62 +5,48 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import androidx.core.content.ContextCompat
 import com.mportog.alura.financas.R
 import com.mportog.alura.financas.model.Transacao
 import com.mportog.alura.financas.utils.enums.Tipo
 import com.mportog.alura.financas.utils.extensions.localeCurrency
 import com.mportog.alura.financas.utils.extensions.localeDate
+import com.mportog.alura.financas.utils.extensions.setDespesaColor
+import com.mportog.alura.financas.utils.extensions.setReceitaColor
 import kotlinx.android.synthetic.main.transacao_item.view.transacao_valor
 import kotlinx.android.synthetic.main.transacao_item.view.transacao_data
 import kotlinx.android.synthetic.main.transacao_item.view.transacao_icone
 import kotlinx.android.synthetic.main.transacao_item.view.transacao_categoria
 
 class ListaTransacoesAdapter(
-    private val _transacoes: List<Transacao>,
-    private val _context: Context
+    private val transacoes: List<Transacao>,
+    private val context: Context
 ) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
 
         val viewCriada =
-            LayoutInflater.from(_context).inflate(R.layout.transacao_item, parent, false)
+            LayoutInflater.from(context).inflate(R.layout.transacao_item, parent, false)
 
-        val transacao = _transacoes[position]
+        val transacao = transacoes[position]
 
-        setViewData(transacao, viewCriada)
-        setTextcolor(transacao, viewCriada)
+        setItemViewData(transacao, viewCriada)
+        setTextColorAndIcon(transacao, viewCriada)
 
         return viewCriada
-
     }
 
-    private fun setTextcolor(transacao: Transacao, viewCriada: View) {
-        if (transacao.tipo == Tipo.DESPEZA) {
 
-            viewCriada.transacao_valor.setTextColor(
-                ContextCompat.getColor(
-                    _context,
-                    R.color.despesa
-                )
-            )
-
+    private fun setTextColorAndIcon(transacao: Transacao, viewCriada: View) {
+        if (transacao.tipo == Tipo.DESPESA) {
+            viewCriada.transacao_valor.setDespesaColor()
             viewCriada.transacao_icone.setBackgroundResource(R.drawable.icone_transacao_item_despesa)
-
         } else {
-
-            viewCriada.transacao_valor.setTextColor(
-                ContextCompat.getColor(
-                    _context,
-                    R.color.receita
-                )
-            )
-
+            viewCriada.transacao_valor.setReceitaColor()
             viewCriada.transacao_icone.setBackgroundResource(R.drawable.icone_transacao_item_receita)
         }
     }
 
-    private fun setViewData(transacao: Transacao, viewCriada: View) {
+    private fun setItemViewData(transacao: Transacao, viewCriada: View) {
 
         viewCriada.transacao_valor.text = transacao.valor.localeCurrency()
         viewCriada.transacao_categoria.text = transacao.categoria
@@ -68,7 +54,7 @@ class ListaTransacoesAdapter(
     }
 
     override fun getItem(position: Int): Transacao {
-        return _transacoes[position]
+        return transacoes[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -76,7 +62,7 @@ class ListaTransacoesAdapter(
     }
 
     override fun getCount(): Int {
-        return _transacoes.size
+        return transacoes.size
     }
 
 }
